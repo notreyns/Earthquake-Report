@@ -27,16 +27,41 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         Earthquake currentEarthquake = getItem(position);
         TextView magnitudeView = (TextView) listItemView.findViewById(R.id.magnitude);
-        // Display the magnitude of the current earthquake in that TextView
         magnitudeView.setText(currentEarthquake.getMagnitude());
 
 
+        TextView locationNearView = (TextView) listItemView.findViewById(R.id.location_near);
         TextView locationView = (TextView) listItemView.findViewById(R.id.location);
-        locationView.setText(currentEarthquake.getLocation());
+
+        String location= currentEarthquake.getLocation();
+        if (location.contains("of")){
+            int indexOf= location.indexOf("of")+2;
+            String locNearset= location.substring(0, indexOf);
+            locationNearView.setText(locNearset);
+            locationView.setText(location.substring(indexOf, location.length()-1));
+        }else{
+            locationNearView.setText("Near the");
+            locationView.setText(location);
+        }
+        Date dateObject = new Date(currentEarthquake.getTimeInMilliseconds());
 
         TextView dateView = (TextView) listItemView.findViewById(R.id.date);
-        dateView.setText(currentEarthquake.getMydate());
+        String formattedDate = formatDate(dateObject);
+        dateView.setText(formattedDate);
+
+        TextView timeView = (TextView) listItemView.findViewById(R.id.time);
+        String formattedTime = formatTime(dateObject);
+        timeView.setText(formattedTime);
         return listItemView;
+    }
+    private String formatDate(Date dateObject) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy");
+        return dateFormat.format(dateObject);
+    }
+
+    private String formatTime(Date dateObject) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+        return timeFormat.format(dateObject);
     }
 
 }
