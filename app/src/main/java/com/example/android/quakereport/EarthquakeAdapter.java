@@ -16,6 +16,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     public EarthquakeAdapter(Context context, List<Earthquake> earthquakes) {
         super(context, 0, earthquakes);
     }
+    private static final String LOCATION_SEPARATOR = " of ";
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -26,8 +27,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         }
 
         Earthquake currentEarthquake = getItem(position);
+
         TextView magnitudeView = (TextView) listItemView.findViewById(R.id.magnitude);
-        magnitudeView.setText(currentEarthquake.getMagnitude());
+        String formattedMagnitude = formatMagnitude(currentEarthquake.getMagnitude());
+        magnitudeView.setText(formattedMagnitude);
 
 
         TextView locationNearView = (TextView) listItemView.findViewById(R.id.location_near);
@@ -38,11 +41,22 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
             int indexOf= location.indexOf("of")+2;
             String locNearset= location.substring(0, indexOf);
             locationNearView.setText(locNearset);
-            locationView.setText(location.substring(indexOf, location.length()-1));
+            locationView.setText(location.substring(indexOf+1, location.length()));
         }else{
             locationNearView.setText("Near the");
             locationView.setText(location);
         }
+        /**
+         * Alternative way to split location to 2 strings
+        if (originalLocation.contains(LOCATION_SEPARATOR)) {
+            String[] parts = originalLocation.split(LOCATION_SEPARATOR);
+            locationOffset = parts[0] + LOCATION_SEPARATOR;
+            primaryLocation = parts[1];
+        } else {
+            locationOffset = getContext().getString(R.string.near_the);
+            primaryLocation = originalLocation;
+        }*/
+
         Date dateObject = new Date(currentEarthquake.getTimeInMilliseconds());
 
         TextView dateView = (TextView) listItemView.findViewById(R.id.date);
@@ -62,6 +76,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     private String formatTime(Date dateObject) {
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
         return timeFormat.format(dateObject);
+    }
+    private String formatMagnitude(double magnitude) {
+        DecimalFormat magnitudeFormat = new DecimalFormat("0.0");
+        return magnitudeFormat.format(magnitude);
     }
 
 }
